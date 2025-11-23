@@ -1,0 +1,6 @@
+@NLayerShop.Api_HostAddress = http://localhost:5135
+
+GET {{NLayerShop.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop", "NLayerShop\NLayerShop.csproj", "{52519E88-75CB-40ED-AC5E-57B47020646A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Api", "NLayerShop.Api\NLayerShop.Api.csproj", "{7FAD3D8E-0148-4DF0-9751-C050102F21EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Business", "NLayerShop.Business\NLayerShop.Business.csproj", "{68232A01-3409-455B-90B4-A877DAECA1BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Data", "NLayerShop.Data\NLayerShop.Data.csproj", "{1D871370-E5CD-43D8-A894-B51CD39A15C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Domain", "NLayerShop.Domain\NLayerShop.Domain.csproj", "{68D28F8F-0F18-4D4E-A0EC-53326034BDE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Contracts", "NLayerShop.Contracts\NLayerShop.Contracts.csproj", "{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		TextFile1.txt = TextFile1.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52519E88-75CB-40ED-AC5E-57B47020646A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52519E88-75CB-40ED-AC5E-57B47020646A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52519E88-75CB-40ED-AC5E-57B47020646A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52519E88-75CB-40ED-AC5E-57B47020646A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FAD3D8E-0148-4DF0-9751-C050102F21EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FAD3D8E-0148-4DF0-9751-C050102F21EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FAD3D8E-0148-4DF0-9751-C050102F21EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FAD3D8E-0148-4DF0-9751-C050102F21EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68232A01-3409-455B-90B4-A877DAECA1BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68232A01-3409-455B-90B4-A877DAECA1BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68232A01-3409-455B-90B4-A877DAECA1BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68232A01-3409-455B-90B4-A877DAECA1BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D871370-E5CD-43D8-A894-B51CD39A15C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D871370-E5CD-43D8-A894-B51CD39A15C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D871370-E5CD-43D8-A894-B51CD39A15C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D871370-E5CD-43D8-A894-B51CD39A15C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68D28F8F-0F18-4D4E-A0EC-53326034BDE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68D28F8F-0F18-4D4E-A0EC-53326034BDE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68D28F8F-0F18-4D4E-A0EC-53326034BDE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68D28F8F-0F18-4D4E-A0EC-53326034BDE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84644EFD-4B62-4BE4-83FD-91873CFA0114}
+	EndGlobalSection
+EndGlobal

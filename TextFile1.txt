@@ -1,0 +1,77 @@
+﻿!!!!!!!!!!!!!!!!!! Bağımlılık yönü: Api → Business → Data → Domain (+ Contracts hem Api hem Business tarafından kullanılır) !!!!!!!!!!!!!!!!!!!!!!!!
+----------------------------------------------------------------------------------------------------------------------------------------------------
+NLayerShop.Domain
+İşin ham çekirdeği. Entity sınıfları (Product, Category…), basit kurallar, BaseEntity.
+⚠️ Burada EF, AutoMapper, web vb. bağımlılık olmaz.
+
+NLayerShop.Contracts
+Dış dünyayla konuşan DTO’lar ve ortak modeller (PagedRequest/Response, ApiResult vs.).
+API bu tipleri döner, UI bu tipleri tüketir.
+
+NLayerShop.Data
+EF Core tarafı: DbContext, Repository, UnitOfWork, entity konfigürasyonları ve migration’lar.
+Domain’deki entity’leri veri tabanına bağlayan katman.
+
+NLayerShop.Business
+Service (iş kuralları) katmanı. Controller’ın çağırdığı metotlar burada: Create/Update/Delete/List akışı, validasyon çağrıları, mapping.
+Veri erişimini Data üzerinden kullanır.
+
+NLayerShop.Api
+Web API (Presentation). Sadece endpoint tanımlar (Controllers), DI kayıtları, middleware’ler, Swagger.
+Tüm işi Business yapar, burası ince kalır.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+// IEnumerable: bütün ürünler önce belleğe gelir, sonra filtre
+IEnumerable<Product> list = await _repo.GetAllAsync();
+var cheap = list.Where(p => p.Price < 1000);
+
+// IQueryable: filtre SQL tarafında çalışır
+IQueryable<Product> query = _repo.Query();
+var cheap = await query.Where(p => p.Price < 1000).ToListAsync();
+
+4. Kurumsalda Best Practice
+
+Repository’de hem GetAllAsync hem Query olur.
+
+GetAllAsync() → hızlıca hepsini almak için (küçük tablolar).
+
+Query() → Business katmanında dinamik filtre, sıralama, paging yapmak için.
+
+Controller → Service → Query() zinciri kurumsal projelerde çok yaygındır.
+
+👉 Özet:
+IQueryable<T> Query(); sana esnek ve performanslı sorgulama imkânı verir.
+Yani “repo bana kapıyı açıyor, asıl sorguyu service katmanı kuruyor” mantığıdır.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+!🔹! DbContext
+
+* EF Core’un veritabanı ile konuşan ana sınıfıdır.
+
+* Scoped olarak DI’a kaydedilir → her HTTP isteğinde tek DbContext kullanılır.
+
+* Entity’leri bellekte track eder (aynı entity tekrar çağrılırsa DB’ye gitmez = cache).
+
+* Asıl veritabanı yazma işi SaveChangesAsync() ile yapılır (transaction içinde).
+
+!🔹! UnitOfWork
+
+* Tüm repository’leri tek bir iş birimi altında toplar.
+
+Amaç:
+
+* Tek DbContext paylaşımı
+
+* Tek SaveChanges noktası (atomiklik: ya hepsi başarılı, ya hiçbiri)
+
+* Transaction ve concurrency yönetimini kolaylaştırmak
+
+* Business katmanına repo sızdırmamak (yalnızca UoW kullanılır).
+
+!🔹! Dependency Injection
+
+* DI’a DbContext ve UnitOfWork kaydedilir.
+
+* Repository’ler DI’a kaydedilmez, çünkü UnitOfWork içinde new’lenir.
+
+* Böylece repo’lar dışarıya açılmaz, herkes UoW üzerinden erişmek zorunda kalır → tek commit noktası korunur.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
