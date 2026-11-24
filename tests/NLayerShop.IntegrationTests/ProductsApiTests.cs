@@ -149,6 +149,20 @@ public class ProductsApiTests : ApiTestBase
     }
 
     [Fact]
+    public async Task Create_without_price_and_stock_returns_400_instead_of_defaulting_to_zero()
+    {
+        var response = await Client.PostAsJsonAsync("/api/products",
+            new { name = Unique("no-price"), description = "x", categoryId = (int?)null });
+
+        var problem = await ShouldBeValidationProblemAsync(response);
+        // JsonRequired failures are reported by the JSON input formatter (key "$"), with the
+        // missing property names in the message, so search keys and messages together.
+        var text = string.Join(" ", problem.Errors.Keys.Concat(problem.Errors.Values.SelectMany(v => v)))
+            .ToLowerInvariant();
+        text.Should().Contain("price").And.Contain("stockcount");
+    }
+
+    [Fact]
     public async Task List_with_invalid_sort_and_price_range_returns_400()
     {
         var response = await Client.GetAsync("/api/products?sortBy=stock&minPrice=50&maxPrice=10&size=101");

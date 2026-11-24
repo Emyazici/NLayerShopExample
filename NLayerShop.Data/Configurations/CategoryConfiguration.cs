@@ -11,6 +11,11 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         // Soft delete: pasif kayitlar tum sorgulardan otomatik olarak dislanir.
         builder.HasQueryFilter(c => c.IsActive);
 
+        // Length mirrors CategoryCreate/UpdateDtoValidator.
+        builder.Property(c => c.Name)
+            .IsRequired()
+            .HasMaxLength(100);
+
         builder.HasMany(c => c.Products)
             .WithOne(p => p.Category)
             .HasForeignKey(p => p.CategoryId)
