@@ -6,8 +6,8 @@ namespace NLayerShop.Business.Interfaces
     public interface ICategoryService
     {
         public Task<PagedResponse<CategoryDetailDto>> GetPagedAsync(PagedRequest req, CancellationToken ct);
-        public Task<CategoryDetailDto?> GetByIdAsync(int id, CancellationToken ct);
-        public Task<int> CreateAsync(CategoryCreateDto dto, CancellationToken ct);
+        public Task<CategoryDetailDto> GetByIdAsync(int id, CancellationToken ct);
+        public Task<CategoryDetailDto> CreateAsync(CategoryCreateDto dto, CancellationToken ct);
         public Task UpdateAsync(int id, CategoryUpdateDto dto, CancellationToken ct);
         public Task DeleteAsync(int id, CancellationToken ct);
     }

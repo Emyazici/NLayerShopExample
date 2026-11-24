@@ -1,4 +1,4 @@
-﻿namespace NLayerShop.Contracts.DTOs.Products
+namespace NLayerShop.Contracts.DTOs.Products
 {
     public record ProductDetailDto(
         int Id,
@@ -7,6 +7,7 @@
         string Description,
         int StockCount,
         int? CategoryId,
-        string? CategoryName
+        string? CategoryName,
+        string RowVersion // Base64; PUT isteginde aynen geri gonderilmeli (optimistic concurrency)
     );
 }

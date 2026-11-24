@@ -17,17 +17,14 @@ public class CategoriesController : ControllerBase
         => _svc.GetPagedAsync(req, ct);
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<CategoryDetailDto>> GetById(int id, CancellationToken ct)
-    {
-        var dto = await _svc.GetByIdAsync(id, ct);
-        return dto is null ? NotFound() : Ok(dto);
-    }
+    public Task<CategoryDetailDto> GetById(int id, CancellationToken ct)
+        => _svc.GetByIdAsync(id, ct);
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CategoryCreateDto dto, CancellationToken ct)
+    public async Task<ActionResult<CategoryDetailDto>> Create([FromBody] CategoryCreateDto dto, CancellationToken ct)
     {
-        var id = await _svc.CreateAsync(dto, ct);
-        return CreatedAtAction(nameof(GetById), new { id }, null);
+        var created = await _svc.CreateAsync(dto, ct);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
