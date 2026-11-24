@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace NLayerShop.Contracts.DTOs.Products
 {
     /// <summary>
@@ -6,9 +8,9 @@ namespace NLayerShop.Contracts.DTOs.Products
     /// </summary>
     public record ProductUpdateDto(
         string Name,
-        decimal Price,
+        [property: JsonRequired] decimal Price,
         string Description,
-        int StockCount,
+        [property: JsonRequired] int StockCount,
         int? CategoryId,
         string RowVersion
     );
