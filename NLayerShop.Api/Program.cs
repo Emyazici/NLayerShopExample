@@ -70,11 +70,16 @@ app.UseSerilogRequestLogging();
 // Exception'ları ProblemDetails cevabına çevirir (GlobalExceptionHandler)
 app.UseExceptionHandler();
 
-// (İster development, ister prod) Swagger açık kalsın:
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    // Development (incl. the Docker setup) is served over plain HTTP.
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 

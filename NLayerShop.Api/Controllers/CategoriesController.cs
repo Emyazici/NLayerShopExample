@@ -13,14 +13,20 @@ public class CategoriesController : ControllerBase
     public CategoriesController(ICategoryService svc) => _svc = svc;
 
     [HttpGet]
+    [ProducesResponseType(typeof(PagedResponse<CategoryDetailDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
     public Task<PagedResponse<CategoryDetailDto>> Get([FromQuery] PagedRequest req, CancellationToken ct)
         => _svc.GetPagedAsync(req, ct);
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(CategoryDetailDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
     public Task<CategoryDetailDto> GetById(int id, CancellationToken ct)
         => _svc.GetByIdAsync(id, ct);
 
     [HttpPost]
+    [ProducesResponseType(typeof(CategoryDetailDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
     public async Task<ActionResult<CategoryDetailDto>> Create([FromBody] CategoryCreateDto dto, CancellationToken ct)
     {
         var created = await _svc.CreateAsync(dto, ct);
@@ -28,6 +34,9 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
     public async Task<IActionResult> Update(int id, [FromBody] CategoryUpdateDto dto, CancellationToken ct)
     {
         await _svc.UpdateAsync(id, dto, ct);
@@ -35,6 +44,8 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound, "application/problem+json")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         await _svc.DeleteAsync(id, ct);
