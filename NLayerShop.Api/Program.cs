@@ -7,8 +7,15 @@ using NLayerShop.Business.Services;
 using NLayerShop.Business.Mapping;
 using NLayerShop.Business.Validation;
 using NLayerShop.Api.ExceptionHandling;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serilog: structured console logging, configured from the "Serilog" section of appsettings.
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
 
 // -------------------- Services (DI) --------------------
 builder.Services.AddControllers();
@@ -46,6 +53,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // -------------------- Middleware Pipeline --------------------
+// One concise log line per request (method, path, status code, elapsed time).
+// Registered before the exception handler so it logs the final status code (e.g. 404), not 500.
+app.UseSerilogRequestLogging();
+
 // Exception'ları ProblemDetails cevabına çevirir (GlobalExceptionHandler)
 app.UseExceptionHandler();
 
