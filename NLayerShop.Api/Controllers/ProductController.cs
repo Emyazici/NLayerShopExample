@@ -16,7 +16,7 @@ namespace NLayerShop.Api.Controllers
         }
 
         [HttpGet]
-        public Task<PagedResponse<ProductDetailDto>> Get([FromQuery] PagedRequest req, CancellationToken ct)
+        public Task<PagedResponse<ProductDetailDto>> Get([FromQuery] ProductQueryRequest req, CancellationToken ct)
         {
             return _svc.GetPagedAsync(req, ct);
         }
