@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using NLayerShop.Business.Exceptions;
 using NLayerShop.Business.Interfaces;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Products;
 using NLayerShop.Data.UnitOfWork;
 using NLayerShop.Domain.Entities;
-using System.ComponentModel.DataAnnotations;
 
 namespace NLayerShop.Business.Services
 {
@@ -31,7 +31,7 @@ namespace NLayerShop.Business.Services
         public async Task DeleteAsync(int id, CancellationToken ct)
         {
             var entity = await _uow.Products.GetByIdAsync(id,ct)
-                ?? throw new KeyNotFoundException("Product Not Found...");
+                ?? throw new NotFoundException("Product", id);
 
             _uow.Products.Remove(entity);
             await _uow.SaveChangesAsync(ct);
@@ -68,19 +68,19 @@ namespace NLayerShop.Business.Services
         public async Task UpdateAsync(int id, ProductUpdateDto dto, CancellationToken ct)
         {
             var entity = await _uow.Products.GetByIdAsync(id, ct)
-                ?? throw new KeyNotFoundException("Product Not Found...");
+                ?? throw new NotFoundException("Product", id);
 
             _mapper.Map(dto,entity);//Category disindakiler maplendi
 
             if (dto.CategoryId.HasValue && dto.RemoveCategory == true)
-                throw new ValidationException("CategoryId verilirken RemoveCategory true olamaz.");
+                throw new BusinessRuleException("CategoryId verilirken RemoveCategory true olamaz.");
 
             if (dto.CategoryId.HasValue) {
                 var newId=dto.CategoryId.Value;
 
                 var exist = await _uow.Categories.GetByIdAsync(newId, ct);
                 if (exist is null)
-                    throw new ValidationException($"Category {newId} not found.");
+                    throw new BusinessRuleException($"Category {newId} does not exist.");
 
                 entity.CategoryId = newId;
                 entity.Category = null;

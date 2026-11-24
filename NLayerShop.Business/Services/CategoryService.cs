@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using NLayerShop.Business.Exceptions;
 using NLayerShop.Business.Interfaces;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Categories;
@@ -55,7 +56,7 @@ public class CategoryService : ICategoryService
     public async Task UpdateAsync(int id, CategoryUpdateDto dto, CancellationToken ct)
     {
         var entity = await _uow.Categories.GetByIdAsync(id, ct)
-                     ?? throw new KeyNotFoundException("Category not found");
+                     ?? throw new NotFoundException("Category", id);
 
         _mapper.Map(dto, entity);
         _uow.Categories.Update(entity);
@@ -65,7 +66,7 @@ public class CategoryService : ICategoryService
     public async Task DeleteAsync(int id, CancellationToken ct)
     {
         var entity = await _uow.Categories.GetByIdAsync(id, ct)
-                     ?? throw new KeyNotFoundException("Category not found");
+                     ?? throw new NotFoundException("Category", id);
 
         _uow.Categories.Remove(entity);
         await _uow.SaveChangesAsync(ct);
