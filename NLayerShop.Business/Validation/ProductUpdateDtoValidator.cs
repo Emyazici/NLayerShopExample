@@ -16,7 +16,8 @@ namespace NLayerShop.Business.Validation
             RuleFor(x => x.RowVersion)
                 .NotEmpty()
                 .Must(RowVersionValidation.BeValidRowVersion)
-                    .When(x => !string.IsNullOrEmpty(x.RowVersion))
+                    // CurrentValidator: without it the condition would also disable NotEmpty above.
+                    .When(x => !string.IsNullOrEmpty(x.RowVersion), ApplyConditionTo.CurrentValidator)
                     .WithMessage("'Row Version' must be a valid Base64-encoded rowversion value.");
         }
     }

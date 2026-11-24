@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Domain", "NLayer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.Contracts", "NLayerShop.Contracts\NLayerShop.Contracts.csproj", "{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.UnitTests", "tests\NLayerShop.UnitTests\NLayerShop.UnitTests.csproj", "{3D9A8448-075A-490F-BFA7-ADC442B5075C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLayerShop.IntegrationTests", "tests\NLayerShop.IntegrationTests\NLayerShop.IntegrationTests.csproj", "{922860A8-2D2F-4128-98FF-18A779D6389B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +45,21 @@ Global
 		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F4B4070-A98C-45E9-A073-46DDB0EF43F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D9A8448-075A-490F-BFA7-ADC442B5075C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D9A8448-075A-490F-BFA7-ADC442B5075C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D9A8448-075A-490F-BFA7-ADC442B5075C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D9A8448-075A-490F-BFA7-ADC442B5075C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{922860A8-2D2F-4128-98FF-18A779D6389B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{922860A8-2D2F-4128-98FF-18A779D6389B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{922860A8-2D2F-4128-98FF-18A779D6389B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{922860A8-2D2F-4128-98FF-18A779D6389B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D9A8448-075A-490F-BFA7-ADC442B5075C} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{922860A8-2D2F-4128-98FF-18A779D6389B} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {84644EFD-4B62-4BE4-83FD-91873CFA0114}
