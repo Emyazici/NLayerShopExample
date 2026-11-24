@@ -1,5 +1,6 @@
 using AutoMapper;
 using NLayerShop.Contracts.DTOs.Categories;
+using NLayerShop.Contracts.DTOs.Orders;
 using NLayerShop.Contracts.DTOs.Products;
 using NLayerShop.Domain.Entities;
 
@@ -27,6 +28,15 @@ namespace NLayerShop.Business.Mapping
             CreateMap<CategoryCreateDto, Category>();
             CreateMap<CategoryUpdateDto, Category>();
             CreateMap<Category, CategoryDetailDto>();
+
+            // Orders: sadece okuma yonu (olusturma kurallari OrderService icinde).
+            // Status enum -> string; ProjectTo ile SQL'e cevrilir (kolon zaten string saklaniyor).
+            CreateMap<OrderItem, OrderItemDto>();
+            CreateMap<Order, OrderDetailDto>()
+                .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()))
+                .ForMember(d => d.Items, opt => opt.MapFrom(s => s.Items.OrderBy(i => i.Id)));
+            CreateMap<Order, OrderListItemDto>()
+                .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
         }
     }
 }
