@@ -12,11 +12,14 @@ namespace NLayerShop.Data.UnitOfWork
 
         public IGenericRepository<Category> Categories { get; }
 
+        public IGenericRepository<Order> Orders { get; }
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             Products = new GenericRepository<Product>(context);
             Categories = new GenericRepository<Category>(context);
+            Orders = new GenericRepository<Order>(context);
         }
 
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
