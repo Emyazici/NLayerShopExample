@@ -10,7 +10,7 @@ namespace NLayerShop.Business.Validation
         {
             RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
             RuleFor(x => x.Description).NotNull().MaximumLength(1000);
-            RuleFor(x => x.Price).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.Price).GreaterThanOrEqualTo(0).PrecisionScale(18, 2, ignoreTrailingZeros: true); // matches decimal(18,2)
             RuleFor(x => x.StockCount).GreaterThanOrEqualTo(0);
             RuleFor(x => x.CategoryId).GreaterThan(0).When(x => x.CategoryId.HasValue);
             RuleFor(x => x.RowVersion)

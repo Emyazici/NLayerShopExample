@@ -56,6 +56,24 @@ public class ProductCreateDtoValidatorTests
     }
 
     [Fact]
+    public void Price_with_more_than_two_decimals_fails()
+    {
+        _validator.TestValidate(Valid() with { Price = 9.999m }).ShouldHaveValidationErrorFor(x => x.Price);
+    }
+
+    [Fact]
+    public void Price_with_trailing_zeros_passes()
+    {
+        _validator.TestValidate(Valid() with { Price = 9.9900m }).ShouldNotHaveValidationErrorFor(x => x.Price);
+    }
+
+    [Fact]
+    public void Price_exceeding_decimal_18_2_fails()
+    {
+        _validator.TestValidate(Valid() with { Price = 10_000_000_000_000_000m }).ShouldHaveValidationErrorFor(x => x.Price);
+    }
+
+    [Fact]
     public void Negative_stock_fails()
     {
         _validator.TestValidate(Valid() with { StockCount = -1 }).ShouldHaveValidationErrorFor(x => x.StockCount);
