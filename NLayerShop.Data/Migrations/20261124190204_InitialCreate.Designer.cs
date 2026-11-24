@@ -12,8 +12,8 @@ using NLayerShop.Data.Context;
 namespace NLayerShop.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250919183214_Init")]
-    partial class Init
+    [Migration("20261124190204_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,7 +107,8 @@ namespace NLayerShop.Data.Migrations
                 {
                     b.HasOne("NLayerShop.Domain.Entities.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Category");
                 });

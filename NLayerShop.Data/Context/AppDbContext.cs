@@ -14,14 +14,6 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Product>()
-            .Property(p => p.Price)
-            .HasPrecision(18, 2); // SQL: decimal(18,2)
-
-        modelBuilder.Entity<Category>()
-            .HasMany(c=>c.Products)
-            .WithOne(p=>p.Category)
-            .HasForeignKey(p=>p.CategoryId)
-            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

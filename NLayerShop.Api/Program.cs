@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using NLayerShop.Data.Context;
 using NLayerShop.Data.UnitOfWork;
 using NLayerShop.Business.Interfaces;
@@ -13,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // -------------------- Services (DI) --------------------
 builder.Services.AddControllers();
 
-// Validatorlarý bu assembly'den tara
+// ValidatorlarÄ± bu assembly'den tara
 builder.Services.AddValidatorsFromAssemblyContaining<ProductCreateDtoValidator>();
 
 // AutoMapper profilleri
@@ -22,7 +21,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// PostgreSQL için: opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
+// PostgreSQL iÃ§in: opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"))
 
 // Unit of Work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -38,11 +37,11 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // -------------------- Middleware Pipeline --------------------
-// (Ýster development, ister prod) Swagger açýk kalsýn:
+// (Ä°ster development, ister prod) Swagger aÃ§Ä±k kalsÄ±n:
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// (Ýleride Global Exception Middleware ekleyeceðiz)
+// (Ä°leride Global Exception Middleware ekleyeceÄŸiz)
 // app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();

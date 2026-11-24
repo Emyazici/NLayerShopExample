@@ -2,11 +2,6 @@
 using NLayerShop.Contracts.DTOs.Categories;
 using NLayerShop.Contracts.DTOs.Products;
 using NLayerShop.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NLayerShop.Business.Mapping
 {

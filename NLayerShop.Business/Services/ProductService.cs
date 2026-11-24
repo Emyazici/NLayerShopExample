@@ -5,12 +5,7 @@ using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Products;
 using NLayerShop.Data.UnitOfWork;
 using NLayerShop.Domain.Entities;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NLayerShop.Business.Services
 {
