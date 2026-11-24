@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NLayerShop.Business.Interfaces;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Products;
-
 
 namespace NLayerShop.Api.Controllers
 {
