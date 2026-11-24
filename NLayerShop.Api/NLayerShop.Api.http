@@ -79,3 +79,62 @@ DELETE {{NLayerShop.Api_HostAddress}}/api/products/1
 
 ### Soft delete a category (204); its products are kept but lose the category
 DELETE {{NLayerShop.Api_HostAddress}}/api/categories/1
+
+# ==================== Orders ====================
+# Creating an order touches Orders + OrderItems + Products (stock) in ONE SaveChanges (Unit of Work).
+
+### Create an order (201 + OrderDetailDto); stock of each product is decremented
+POST {{NLayerShop.Api_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": 1, "quantity": 2 },
+    { "productId": 2, "quantity": 1 }
+  ]
+}
+
+### Insufficient stock -> 422, nothing is written (no order, no stock change)
+POST {{NLayerShop.Api_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": 1, "quantity": 100000 }
+  ]
+}
+
+### Empty items / quantity 0 / duplicate productId -> 400 ValidationProblemDetails
+POST {{NLayerShop.Api_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": 1, "quantity": 0 },
+    { "productId": 1, "quantity": 1 }
+  ]
+}
+
+### Unknown (or soft-deleted) product -> 404
+POST {{NLayerShop.Api_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": 9999, "quantity": 1 }
+  ]
+}
+
+### List orders (paged, optional status filter: Pending | Completed | Cancelled)
+GET {{NLayerShop.Api_HostAddress}}/api/orders?page=1&size=20&status=Pending
+Accept: application/json
+
+### Get order by id (items carry the name/price snapshot taken at order time)
+GET {{NLayerShop.Api_HostAddress}}/api/orders/1
+Accept: application/json
+
+### Cancel a pending order (204); stocks are restored. Non-pending -> 422
+POST {{NLayerShop.Api_HostAddress}}/api/orders/1/cancel
+
+### Complete a pending order (204). Non-pending -> 422
+POST {{NLayerShop.Api_HostAddress}}/api/orders/1/complete
