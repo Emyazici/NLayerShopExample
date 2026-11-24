@@ -7,6 +7,7 @@ using NLayerShop.Business.Services;
 using NLayerShop.Business.Mapping;
 using NLayerShop.Business.Validation;
 using NLayerShop.Api.ExceptionHandling;
+using NLayerShop.Data.Seed;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Development only: apply migrations and insert demo data when the database is empty.
+// Other environments (Production, Testing, ...) manage their schema and data themselves.
+if (app.Environment.IsDevelopment())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbSeeder.MigrateAndSeedAsync(db);
+}
 
 // -------------------- Middleware Pipeline --------------------
 // One concise log line per request (method, path, status code, elapsed time).
