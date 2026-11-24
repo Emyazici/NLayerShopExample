@@ -7,8 +7,16 @@ using NLayerShop.Business.Services;
 using NLayerShop.Business.Mapping;
 using NLayerShop.Business.Validation;
 using NLayerShop.Api.ExceptionHandling;
+using NLayerShop.Data.Seed;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serilog: structured console logging, configured from the "Serilog" section of appsettings.
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
 
 // -------------------- Services (DI) --------------------
 builder.Services.AddControllers();
@@ -45,15 +53,33 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Development only: apply migrations and insert demo data when the database is empty.
+// Other environments (Production, Testing, ...) manage their schema and data themselves.
+if (app.Environment.IsDevelopment())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbSeeder.MigrateAndSeedAsync(db);
+}
+
 // -------------------- Middleware Pipeline --------------------
+// One concise log line per request (method, path, status code, elapsed time).
+// Registered before the exception handler so it logs the final status code (e.g. 404), not 500.
+app.UseSerilogRequestLogging();
+
 // Exception'ları ProblemDetails cevabına çevirir (GlobalExceptionHandler)
 app.UseExceptionHandler();
 
-// (İster development, ister prod) Swagger açık kalsın:
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    // Development (incl. the Docker setup) is served over plain HTTP.
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 
