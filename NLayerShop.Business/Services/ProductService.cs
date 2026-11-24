@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NLayerShop.Business.Exceptions;
 using NLayerShop.Business.Interfaces;
+using NLayerShop.Business.Querying;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Products;
 using NLayerShop.Data.UnitOfWork;
@@ -17,32 +18,33 @@ namespace NLayerShop.Business.Services
         private readonly IMapper _mapper;
         private readonly IValidator<ProductCreateDto> _createValidator;
         private readonly IValidator<ProductUpdateDto> _updateValidator;
-        private readonly IValidator<PagedRequest> _pagedRequestValidator;
+        private readonly IValidator<ProductQueryRequest> _queryValidator;
 
         public ProductService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<ProductCreateDto> createValidator,
             IValidator<ProductUpdateDto> updateValidator,
-            IValidator<PagedRequest> pagedRequestValidator)
+            IValidator<ProductQueryRequest> queryValidator)
         {
             _uow = unitOfWork;
             _mapper = mapper;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
-            _pagedRequestValidator = pagedRequestValidator;
+            _queryValidator = queryValidator;
         }
 
-        public async Task<PagedResponse<ProductDetailDto>> GetPagedAsync(PagedRequest req, CancellationToken ct)
+        public async Task<PagedResponse<ProductDetailDto>> GetPagedAsync(ProductQueryRequest req, CancellationToken ct)
         {
-            await _pagedRequestValidator.ValidateAndThrowAsync(req, ct);
+            await _queryValidator.ValidateAndThrowAsync(req, ct);
 
-            var q = _uow.Products.Query()
+            var filtered = _uow.Products.Query()
                 .AsNoTracking()
-                .OrderByDescending(p => p.Id);
+                .ApplyFilters(req);
 
-            var total = await q.CountAsync(ct);
-            var items = await q.Skip((req.Page - 1) * req.Size)
+            var total = await filtered.CountAsync(ct);
+            var items = await filtered.ApplySorting(req)
+                               .Skip((req.Page - 1) * req.Size)
                                .Take(req.Size)
                                .ProjectTo<ProductDetailDto>(_mapper.ConfigurationProvider)
                                .ToListAsync(ct);
