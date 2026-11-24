@@ -43,5 +43,10 @@ namespace NLayerShop.Data.Repositories.Implementations
         {
             _dbSet.Update(entity);
         }
+
+        public void SetOriginalRowVersion(T entity, byte[] rowVersion)
+        {
+            _context.Entry(entity).Property(e => e.RowVersion).OriginalValue = rowVersion;
+        }
     }
 }

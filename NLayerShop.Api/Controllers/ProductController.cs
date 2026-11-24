@@ -16,27 +16,26 @@ namespace NLayerShop.Api.Controllers
         }
 
         [HttpGet]
-        public Task<PagedResponse<ProductDetailDto>> Get([FromQuery] PagedRequest req,CancellationToken ct)
+        public Task<PagedResponse<ProductDetailDto>> Get([FromQuery] PagedRequest req, CancellationToken ct)
         {
             return _svc.GetPagedAsync(req, ct);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<ProductDetailDto>> GetById(int id,CancellationToken ct)
+        public Task<ProductDetailDto> GetById(int id, CancellationToken ct)
         {
-            var dto = await _svc.GetByIdAsync(id, ct);
-            return dto is null ? NotFound() : Ok(dto);
+            return _svc.GetByIdAsync(id, ct);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ProductCreateDto dto,CancellationToken ct)
+        public async Task<ActionResult<ProductDetailDto>> Create([FromBody] ProductCreateDto dto, CancellationToken ct)
         {
-            var id = await _svc.CreateAsync(dto, ct);
-            return CreatedAtAction(nameof(GetById), new { id }, null);
+            var created = await _svc.CreateAsync(dto, ct);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id,ProductUpdateDto dto,CancellationToken ct)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateDto dto, CancellationToken ct)
         {
             await _svc.UpdateAsync(id, dto, ct);
             return NoContent();

@@ -10,6 +10,10 @@ namespace NLayerShop.Data.Repositories.Interfaces
         Task AddAsync(T entity, CancellationToken ct = default);
         void Update(T entity);         // sync kalması yeterli
         void Remove(T entity);         // sync kalması yeterli
+
+        // Optimistic concurrency: istemcinin gonderdigi RowVersion'i orijinal deger olarak isaretler,
+        // boylece UPDATE ... WHERE RowVersion = @original uretilir.
+        void SetOriginalRowVersion(T entity, byte[] rowVersion);
     }
 
 }
