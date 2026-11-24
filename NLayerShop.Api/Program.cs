@@ -14,7 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // RFC 9457 ProblemDetails + global exception handler
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options =>
+    options.CustomizeProblemDetails = ctx =>
+        ctx.ProblemDetails.Extensions.TryAdd("traceId",
+            System.Diagnostics.Activity.Current?.Id ?? ctx.HttpContext.TraceIdentifier));
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Validatorları bu assembly'den tara

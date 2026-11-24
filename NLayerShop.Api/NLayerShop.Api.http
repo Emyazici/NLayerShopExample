@@ -1,6 +1,81 @@
 @NLayerShop.Api_HostAddress = http://localhost:5135
 
-GET {{NLayerShop.Api_HostAddress}}/api/products
+### Create a category (201 + body + Location header)
+POST {{NLayerShop.Api_HostAddress}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "Electronics"
+}
+
+### List categories (paged)
+GET {{NLayerShop.Api_HostAddress}}/api/categories?page=1&size=20
 Accept: application/json
 
-###
+### List products (paged, 1 <= size <= 100)
+GET {{NLayerShop.Api_HostAddress}}/api/products?page=1&size=20
+Accept: application/json
+
+### Invalid paging -> 400 ValidationProblemDetails
+GET {{NLayerShop.Api_HostAddress}}/api/products?page=0&size=101
+Accept: application/json
+
+### Get product by id (404 ProblemDetails if missing or soft-deleted)
+GET {{NLayerShop.Api_HostAddress}}/api/products/1
+Accept: application/json
+
+### Create a product (201 + ProductDetailDto incl. rowVersion)
+POST {{NLayerShop.Api_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Phone",
+  "price": 999.90,
+  "description": "Smartphone",
+  "stockCount": 10,
+  "categoryId": 1
+}
+
+### Invalid input -> 400 with errors dictionary
+POST {{NLayerShop.Api_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": -1,
+  "description": "x",
+  "stockCount": -5,
+  "categoryId": null
+}
+
+### Unknown (or soft-deleted) category -> 422 Business rule violation
+POST {{NLayerShop.Api_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Orphan",
+  "price": 1,
+  "description": "x",
+  "stockCount": 1,
+  "categoryId": 9999
+}
+
+### Full replace (PUT): all fields required, categoryId null = no category.
+### rowVersion must be the value from the last GET; reusing a stale one -> 409 Conflict
+PUT {{NLayerShop.Api_HostAddress}}/api/products/1
+Content-Type: application/json
+
+{
+  "name": "Phone v2",
+  "price": 899.90,
+  "description": "Smartphone",
+  "stockCount": 8,
+  "categoryId": null,
+  "rowVersion": "AAAAAAAAB9E="
+}
+
+### Soft delete a product (204); it disappears from GET endpoints
+DELETE {{NLayerShop.Api_HostAddress}}/api/products/1
+
+### Soft delete a category (204); its products are kept but lose the category
+DELETE {{NLayerShop.Api_HostAddress}}/api/categories/1
