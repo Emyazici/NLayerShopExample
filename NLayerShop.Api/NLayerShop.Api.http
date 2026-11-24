@@ -20,6 +20,18 @@ Accept: application/json
 GET {{NLayerShop.Api_HostAddress}}/api/products?page=0&size=101
 Accept: application/json
 
+### Filter + sort products. All parameters are optional:
+###   search (Name contains, max 100 chars), categoryId, minPrice, maxPrice, inStock (true|false),
+###   sortBy = name | price | createdAt (default createdAt), sortDir = asc | desc
+###   (default desc for createdAt, asc otherwise). Ties are broken by id.
+### Response carries totalCount, totalPages, hasNext, hasPrevious.
+GET {{NLayerShop.Api_HostAddress}}/api/products?search=phone&minPrice=10&maxPrice=2000&inStock=true&sortBy=price&sortDir=desc&page=1&size=10
+Accept: application/json
+
+### Invalid filter/sort -> 400 (unknown sortBy, minPrice > maxPrice)
+GET {{NLayerShop.Api_HostAddress}}/api/products?sortBy=stock&minPrice=50&maxPrice=10
+Accept: application/json
+
 ### Get product by id (404 ProblemDetails if missing or soft-deleted)
 GET {{NLayerShop.Api_HostAddress}}/api/products/1
 Accept: application/json

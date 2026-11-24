@@ -5,7 +5,7 @@ namespace NLayerShop.Business.Interfaces
 {
     public interface IProductService
     {
-        public Task<PagedResponse<ProductDetailDto>> GetPagedAsync(PagedRequest req, CancellationToken ct);
+        public Task<PagedResponse<ProductDetailDto>> GetPagedAsync(ProductQueryRequest req, CancellationToken ct);
         public Task<ProductDetailDto> GetByIdAsync(int id, CancellationToken ct);
         public Task<ProductDetailDto> CreateAsync(ProductCreateDto dto, CancellationToken ct);
         public Task UpdateAsync(int id, ProductUpdateDto dto, CancellationToken ct);
