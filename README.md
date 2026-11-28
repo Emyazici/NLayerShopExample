@@ -19,6 +19,9 @@ docker compose up -d --build
 Open **http://localhost:8080/swagger**. In Development the API applies migrations and seeds
 4 categories and 21 products on startup. Stop with `docker compose down -v`.
 
+> The Docker setup is for local demos only: it runs in the `Development` environment (Swagger enabled,
+> seed data, exception details in 500 responses) and is not suitable for production.
+
 Tests (Docker must be running for the integration tests):
 
 ```bash
@@ -138,7 +141,8 @@ alter past orders.
 
 **Concurrency.** Products carry a SQL Server `rowversion`. Clients send it back on `PUT`; a stale value
 returns `409`. The same token protects stock: if two orders race for the same product, the second one
-fails with `409` instead of overselling.
+fails with `409` instead of overselling. A client that gets `409` should re-read the product and retry;
+there is deliberately no server-side retry.
 
 **Other choices.** Soft delete with global query filters; `CreatedAt`/`UpdatedAt` set in `SaveChangesAsync`;
 reads use `AsNoTracking` + `ProjectTo` so only needed columns are queried; validation runs explicitly in
