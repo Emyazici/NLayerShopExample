@@ -16,8 +16,8 @@ using NLayerShop.UnitTests.Infrastructure;
 namespace NLayerShop.UnitTests.Services;
 
 /// <summary>
-/// Business-rule tests for OrderService against the real AppDbContext, UnitOfWork and AutoMapper
-/// profile on in-memory SQLite (no IQueryable mocking).
+/// Business-rule tests for OrderService against the real AppDbContext and UnitOfWork
+/// on in-memory SQLite (no IQueryable mocking).
 /// </summary>
 public sealed class OrderServiceTests : IDisposable
 {
@@ -42,7 +42,6 @@ public sealed class OrderServiceTests : IDisposable
 
         return new OrderService(
             new UnitOfWork(context),
-            TestMapper.Mapper,
             new OrderCreateDtoValidator(),
             new OrderQueryRequestValidator());
     }
@@ -156,7 +155,7 @@ public sealed class OrderServiceTests : IDisposable
             .ThrowsAsync(new ValidationException(new[] { new ValidationFailure("Items", "invalid") }));
         var uow = new Mock<IUnitOfWork>(MockBehavior.Strict);
 
-        var sut = new OrderService(uow.Object, TestMapper.Mapper, validator.Object, new OrderQueryRequestValidator());
+        var sut = new OrderService(uow.Object, validator.Object, new OrderQueryRequestValidator());
 
         var act = () => sut.CreateAsync(Order((1, 1)), CancellationToken.None);
 

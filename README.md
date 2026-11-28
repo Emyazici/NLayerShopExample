@@ -6,7 +6,7 @@ A small e-commerce backend built with a classic **N-Layer architecture** on .NET
 It covers products, categories and orders, with validation, RFC 9457 error responses,
 filtering, optimistic concurrency, soft delete and an atomic order flow that updates stock.
 
-**Stack:** ASP.NET Core 8 Web API · EF Core 9 · SQL Server · AutoMapper · FluentValidation · Serilog · xUnit · Testcontainers · Docker · GitHub Actions
+**Stack:** ASP.NET Core 8 Web API · EF Core 9 · SQL Server · FluentValidation · Serilog · xUnit · Testcontainers · Docker · GitHub Actions
 
 ## Quick start
 
@@ -145,7 +145,8 @@ fails with `409` instead of overselling. A client that gets `409` should re-read
 there is deliberately no server-side retry.
 
 **Other choices.** Soft delete with global query filters; `CreatedAt`/`UpdatedAt` set in `SaveChangesAsync`;
-reads use `AsNoTracking` + `ProjectTo` so only needed columns are queried; validation runs explicitly in
+reads use `AsNoTracking` + `Select` projections (plain static expressions in `Business/Mapping`, no mapping
+library) so only needed columns are queried; validation runs explicitly in
 services (`ValidateAndThrowAsync`), not through MVC auto-validation.
 
 ## Project layout

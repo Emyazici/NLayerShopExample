@@ -1,9 +1,8 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NLayerShop.Business.Exceptions;
 using NLayerShop.Business.Interfaces;
+using NLayerShop.Business.Mapping;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Categories;
 using NLayerShop.Data.UnitOfWork;
@@ -14,20 +13,17 @@ namespace NLayerShop.Business.Services;
 public class CategoryService : ICategoryService
 {
     private readonly IUnitOfWork _uow;
-    private readonly IMapper _mapper;
     private readonly IValidator<CategoryCreateDto> _createValidator;
     private readonly IValidator<CategoryUpdateDto> _updateValidator;
     private readonly IValidator<PagedRequest> _pagedRequestValidator;
 
     public CategoryService(
         IUnitOfWork uow,
-        IMapper mapper,
         IValidator<CategoryCreateDto> createValidator,
         IValidator<CategoryUpdateDto> updateValidator,
         IValidator<PagedRequest> pagedRequestValidator)
     {
         _uow = uow;
-        _mapper = mapper;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
         _pagedRequestValidator = pagedRequestValidator;
@@ -44,7 +40,7 @@ public class CategoryService : ICategoryService
         var total = await q.CountAsync(ct);
         var items = await q.Skip((req.Page - 1) * req.Size)
                            .Take(req.Size)
-                           .ProjectTo<CategoryDetailDto>(_mapper.ConfigurationProvider)
+                           .Select(CategoryMappings.ToDetailDto)
                            .ToListAsync(ct);
 
         return new PagedResponse<CategoryDetailDto>
@@ -61,7 +57,7 @@ public class CategoryService : ICategoryService
         return await _uow.Categories.Query()
                    .AsNoTracking()
                    .Where(c => c.Id == id)
-                   .ProjectTo<CategoryDetailDto>(_mapper.ConfigurationProvider)
+                   .Select(CategoryMappings.ToDetailDto)
                    .FirstOrDefaultAsync(ct)
                ?? throw new NotFoundException("Category", id);
     }
@@ -70,7 +66,7 @@ public class CategoryService : ICategoryService
     {
         await _createValidator.ValidateAndThrowAsync(dto, ct);
 
-        var entity = _mapper.Map<Category>(dto);
+        var entity = dto.ToEntity();
         await _uow.Categories.AddAsync(entity, ct);
         await _uow.SaveChangesAsync(ct);
 
@@ -84,7 +80,7 @@ public class CategoryService : ICategoryService
         var entity = await _uow.Categories.GetByIdAsync(id, ct)
                      ?? throw new NotFoundException("Category", id);
 
-        _mapper.Map(dto, entity);
+        dto.ApplyTo(entity);
         await _uow.SaveChangesAsync(ct);
     }
 
