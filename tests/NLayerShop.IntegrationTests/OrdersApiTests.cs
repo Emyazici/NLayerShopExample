@@ -1,13 +1,22 @@
 using System.Net;
+using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NLayerShop.Contracts.DTOs.Orders;
+using NLayerShop.Data.Context;
 using NLayerShop.IntegrationTests.Infrastructure;
 
 namespace NLayerShop.IntegrationTests;
 
 public class OrdersApiTests : ApiTestBase
 {
-    public OrdersApiTests(ApiFactory factory) : base(factory) { }
+    private readonly ApiFactory _factory;
+
+    public OrdersApiTests(ApiFactory factory) : base(factory)
+    {
+        _factory = factory;
+    }
 
     [Fact]
     public async Task Order_decrements_stock_and_cancel_restores_it()
@@ -107,5 +116,64 @@ public class OrdersApiTests : ApiTestBase
 
         await ShouldBeProblemAsync(await Client.GetAsync("/api/orders/987654321"), HttpStatusCode.NotFound);
         await ShouldBeProblemAsync(await Client.PostAsync("/api/orders/987654321/cancel", null), HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Parallel_orders_never_oversell_stock()
+    {
+        const int initialStock = 5;
+        const int requestCount = 10;
+        var product = await CreateProductAsync(stock: initialStock);
+        var ordersBefore = await OrderCountAsync();
+
+        // Each request asks for one unit; all of them race to update the same Product row.
+        var responses = await Task.WhenAll(
+            Enumerable.Range(0, requestCount).Select(_ => PostOrderAsync((product.Id, 1))));
+
+        responses.Select(r => r.StatusCode).Should().OnlyContain(s =>
+            s == HttpStatusCode.Created || s == HttpStatusCode.Conflict || s == HttpStatusCode.UnprocessableEntity,
+            "a lost race must surface as 409 (stale rowVersion) or 422 (no stock left), never as 500");
+
+        var created = responses.Count(r => r.StatusCode == HttpStatusCode.Created);
+        created.Should().BeGreaterThan(0, "the first request to commit always wins");
+        created.Should().BeLessThanOrEqualTo(initialStock);
+
+        var finalStock = (await GetProductAsync(product.Id)).StockCount;
+        finalStock.Should().Be(initialStock - created);
+        finalStock.Should().BeGreaterThanOrEqualTo(0);
+
+        // Tests in the "Api" collection run sequentially, so the delta belongs to this test only.
+        (await OrderCountAsync() - ordersBefore).Should().Be(created,
+            "a rejected request must not leave an order behind");
+    }
+
+    [Fact]
+    public async Task Product_row_version_rejects_a_stale_stock_update()
+    {
+        var product = await CreateProductAsync(stock: 5);
+
+        // Two independent request scopes, each with its own AppDbContext, read the same row version.
+        await using var firstScope = _factory.Services.CreateAsyncScope();
+        await using var secondScope = _factory.Services.CreateAsyncScope();
+        var first = firstScope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var second = secondScope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var firstCopy = await first.Products.SingleAsync(p => p.Id == product.Id);
+        var secondCopy = await second.Products.SingleAsync(p => p.Id == product.Id);
+        firstCopy.StockCount -= 1;
+        secondCopy.StockCount -= 1;
+
+        await first.SaveChangesAsync();
+        var staleSave = () => second.SaveChangesAsync();
+
+        await staleSave.Should().ThrowAsync<DbUpdateConcurrencyException>();
+        (await GetProductAsync(product.Id)).StockCount.Should().Be(4, "only the first update may be applied");
+    }
+
+    private async Task<int> OrderCountAsync()
+    {
+        var response = await Client.GetAsync("/api/orders?page=1&size=1");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        return (await response.Content.ReadFromJsonAsync<PageDto<OrderListItemDto>>())!.TotalCount;
     }
 }

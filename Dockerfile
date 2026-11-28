@@ -6,7 +6,6 @@ WORKDIR /src
 
 # Copy only the solution-level and project files first so `dotnet restore`
 # is cached as long as dependencies do not change.
-COPY Directory.Build.props ./
 COPY NLayerShop.Api/NLayerShop.Api.csproj NLayerShop.Api/
 COPY NLayerShop.Business/NLayerShop.Business.csproj NLayerShop.Business/
 COPY NLayerShop.Contracts/NLayerShop.Contracts.csproj NLayerShop.Contracts/

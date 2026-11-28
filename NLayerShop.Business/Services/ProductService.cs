@@ -1,9 +1,8 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NLayerShop.Business.Exceptions;
 using NLayerShop.Business.Interfaces;
+using NLayerShop.Business.Mapping;
 using NLayerShop.Business.Querying;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Products;
@@ -15,20 +14,17 @@ namespace NLayerShop.Business.Services
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
         private readonly IValidator<ProductCreateDto> _createValidator;
         private readonly IValidator<ProductUpdateDto> _updateValidator;
         private readonly IValidator<ProductQueryRequest> _queryValidator;
 
         public ProductService(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
             IValidator<ProductCreateDto> createValidator,
             IValidator<ProductUpdateDto> updateValidator,
             IValidator<ProductQueryRequest> queryValidator)
         {
             _uow = unitOfWork;
-            _mapper = mapper;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
             _queryValidator = queryValidator;
@@ -46,7 +42,7 @@ namespace NLayerShop.Business.Services
             var items = await filtered.ApplySorting(req)
                                .Skip((req.Page - 1) * req.Size)
                                .Take(req.Size)
-                               .ProjectTo<ProductDetailDto>(_mapper.ConfigurationProvider)
+                               .Select(ProductMappings.ToDetailDto)
                                .ToListAsync(ct);
 
             return new PagedResponse<ProductDetailDto>
@@ -63,7 +59,7 @@ namespace NLayerShop.Business.Services
             return await _uow.Products.Query()
                        .AsNoTracking()
                        .Where(p => p.Id == id)
-                       .ProjectTo<ProductDetailDto>(_mapper.ConfigurationProvider)
+                       .Select(ProductMappings.ToDetailDto)
                        .FirstOrDefaultAsync(ct)
                    ?? throw new NotFoundException("Product", id);
         }
@@ -73,7 +69,7 @@ namespace NLayerShop.Business.Services
             await _createValidator.ValidateAndThrowAsync(dto, ct);
             await EnsureCategoryExistsAsync(dto.CategoryId, ct);
 
-            var entity = _mapper.Map<Product>(dto);
+            var entity = dto.ToEntity();
             await _uow.Products.AddAsync(entity, ct);
             await _uow.SaveChangesAsync(ct);
 
@@ -90,7 +86,7 @@ namespace NLayerShop.Business.Services
             await EnsureCategoryExistsAsync(dto.CategoryId, ct);
 
             // Full replace: CategoryId null ise urun kategorisiz kalir.
-            _mapper.Map(dto, entity);
+            dto.ApplyTo(entity);
 
             // Degisiklik olmasa bile UPDATE gonderilsin ki RowVersion kontrolu her zaman yapilsin.
             _uow.Products.Update(entity);

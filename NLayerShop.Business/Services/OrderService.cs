@@ -1,9 +1,8 @@
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NLayerShop.Business.Exceptions;
 using NLayerShop.Business.Interfaces;
+using NLayerShop.Business.Mapping;
 using NLayerShop.Business.Validation;
 using NLayerShop.Contracts.Common;
 using NLayerShop.Contracts.DTOs.Orders;
@@ -16,18 +15,15 @@ namespace NLayerShop.Business.Services
     public class OrderService : IOrderService
     {
         private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
         private readonly IValidator<OrderCreateDto> _createValidator;
         private readonly IValidator<OrderQueryRequest> _queryValidator;
 
         public OrderService(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
             IValidator<OrderCreateDto> createValidator,
             IValidator<OrderQueryRequest> queryValidator)
         {
             _uow = unitOfWork;
-            _mapper = mapper;
             _createValidator = createValidator;
             _queryValidator = queryValidator;
         }
@@ -45,7 +41,7 @@ namespace NLayerShop.Business.Services
             var items = await q.OrderByDescending(o => o.Id)
                                .Skip((req.Page - 1) * req.Size)
                                .Take(req.Size)
-                               .ProjectTo<OrderListItemDto>(_mapper.ConfigurationProvider)
+                               .Select(OrderMappings.ToListItemDto)
                                .ToListAsync(ct);
 
             return new PagedResponse<OrderListItemDto>
@@ -62,7 +58,7 @@ namespace NLayerShop.Business.Services
             return await _uow.Orders.Query()
                        .AsNoTracking()
                        .Where(o => o.Id == id)
-                       .ProjectTo<OrderDetailDto>(_mapper.ConfigurationProvider)
+                       .Select(OrderMappings.ToDetailDto)
                        .FirstOrDefaultAsync(ct)
                    ?? throw new NotFoundException("Order", id);
         }

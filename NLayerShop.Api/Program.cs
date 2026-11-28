@@ -4,7 +4,6 @@ using NLayerShop.Data.Context;
 using NLayerShop.Data.UnitOfWork;
 using NLayerShop.Business.Interfaces;
 using NLayerShop.Business.Services;
-using NLayerShop.Business.Mapping;
 using NLayerShop.Business.Validation;
 using NLayerShop.Api.ExceptionHandling;
 using NLayerShop.Data.Seed;
@@ -30,9 +29,6 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Validatorları bu assembly'den tara
 builder.Services.AddValidatorsFromAssemblyContaining<ProductCreateDtoValidator>();
-
-// AutoMapper profilleri
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(opt =>
